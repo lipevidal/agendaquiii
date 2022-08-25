@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    public function __construct(User $user) {
+        $this->user = $user;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -13,17 +18,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $users = $this->user::all();
+        return $users;
     }
 
     /**
@@ -34,7 +30,16 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate($this->user->rules(), $this->user->feedback());
+        $user = $this->user->create([
+            'nome' => $request->nome,
+            'email' => $request->email,
+            'telefone' => $request->telefone,
+            'senha' => bcrypt($request->senha),
+            'proprietario' => $request->proprietario,
+            'adm' => false,
+        ]);
+        return $user;
     }
 
     /**

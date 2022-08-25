@@ -20,6 +20,7 @@ class CreateUsersTable extends Migration
             $table->string('telefone')->unique();
             $table->string('senha');
             $table->boolean('adm');
+            $table->boolean('proprietario');
             $table->rememberToken();
             $table->timestamps();
         });
