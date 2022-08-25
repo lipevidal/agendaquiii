@@ -31,14 +31,25 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate($this->user->rules(), $this->user->feedback());
-        $user = $this->user->create([
-            'nome' => $request->nome,
-            'email' => $request->email,
-            'telefone' => $request->telefone,
-            'senha' => bcrypt($request->senha),
-            'proprietario' => $request->proprietario,
-            'adm' => false,
-        ]);
+        if($request->proprietario) {
+            $user = $this->user->create([
+                'nome' => $request->nome,
+                'email' => $request->email,
+                'telefone' => $request->telefone,
+                'password' => bcrypt($request->password),
+                'proprietario' => true,
+                'adm' => false,
+            ]);
+        } else {
+            $user = $this->user->create([
+                'nome' => $request->nome,
+                'email' => $request->email,
+                'telefone' => $request->telefone,
+                'password' => bcrypt($request->password),
+                'proprietario' => false,
+                'adm' => false,
+            ]);
+        }
         return $user;
     }
 
