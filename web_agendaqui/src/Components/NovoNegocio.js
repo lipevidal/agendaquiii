@@ -3,6 +3,7 @@ import api from "../service/api";
 
 export default function NovoNegocio() {
     const token = localStorage.getItem('token')
+    const [negocioId, setNegocioId] = useState('')
     const [erro, setErro] = useState('')
     const [paginas, setPaginas] = useState({
         criarNegocio: true,
@@ -64,6 +65,17 @@ export default function NovoNegocio() {
         setErro('')
         setDadosUsuario({...dadosUsuario, proprietario: e.target.checked})
         console.log(dadosUsuario.proprietario)
+    }
+
+    const pegarTelefone = (e) => {
+        setErro('')
+        let value = e.target.value
+        value = value
+          .replace(/[\D]/g, '')
+          .replace(/(\d{2})(\d)/, '($1) $2')
+          .replace(/(\d{5})(\d)/, '$1-$2')
+          .replace(/(-\d{4})(\d+?)/, '$1')
+          setDadosUsuario({...dadosUsuario, wpp: value})
     }
 
     const buscarCep = () => {
@@ -173,7 +185,87 @@ export default function NovoNegocio() {
         })
     }
 
-    const salvarDados = () => {
+    const validarDadosUser = () => {
+        const body = {
+            nome: dadosUsuario.nomeUsuario + ' ' + dadosUsuario.sobrenome,
+            email: dadosUsuario.email,
+            telefone: dadosUsuario.wpp,
+            password: dadosUsuario.senha,
+            proprietario: dadosUsuario.proprietario,
+            validar: true
+        }
+        api.post('/api/v1/user', body, {
+            headers: {
+                Accept: 'application/json',
+                Authorization: `Bearer ${token}`
+            }
+        }).then((res) => {
+            console.log(res)
+            salvarNegocio()
+        }).catch((err) => {
+            console.log(err.response.data.errors)
+            let e = err.response.data.errors
+            if(e.nome) {
+                setErro(e.nome[0])
+            } else if(e.email) {
+                setErro(e.email[0])
+            } else if(e.telefone) {
+                setErro(e.telefone[0])
+            } else if(e.password) {
+                setErro(e.password[0])
+            } else if(e.numero) {
+                setErro(e.password[0])
+            }
+        })
+    }
+
+    const salvarUnidade = (id) => {
+        const body = {
+            negocio_id: id,
+            nome: dadosUnidade.nomeUnidade.toLowerCase(),
+            link_whatsapp: dadosUnidade.linkWpp,
+            cep: dadosUnidade.cep,
+            rua: dadosUnidade.rua.toLowerCase(),
+            numero: dadosUnidade.numero,
+            complemento: dadosUnidade.complemento.toLowerCase(),
+            bairro: dadosUnidade.bairro.toLowerCase(),
+            cidade: dadosUnidade.cidade.toLowerCase(),
+            estado: dadosUnidade.uf.toLowerCase()
+        }
+        api.post('/api/v1/unidade', body, {
+            headers: {
+                Accept: 'application/json',
+                Authorization: `Bearer ${token}`
+            }
+        }).then((res) => {
+            console.log(res)
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+
+    const salvarUser = (id) => {
+        const body = {
+            negocio_id: id,
+            nome: dadosUsuario.nomeUsuario.toLowerCase() + ' ' + dadosUsuario.sobrenome.toLowerCase(),
+            email: dadosUsuario.email.toLocaleLowerCase(),
+            telefone: dadosUsuario.wpp.toLocaleLowerCase(),
+            password: dadosUsuario.senha,
+            proprietario: dadosUsuario.proprietario
+        }
+        api.post('/api/v1/user', body, {
+            headers: {
+                Accept: 'application/json',
+                Authorization: `Bearer ${token}`
+            }
+        }).then((res) => {
+            console.log(res)
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+
+    const salvarNegocio = () => {
         setErro('')
         console.log(dadosNegocio.nomeNegocio)
         let formData = new FormData();
@@ -191,28 +283,8 @@ export default function NovoNegocio() {
             }
         }).then((res) => {
             console.log(res)
-            const body = {
-                negocio_id: res.data.id,
-                nome: dadosUnidade.nomeUnidade,
-                link_whatsapp: dadosUnidade.linkWpp,
-                cep: dadosUnidade.cep,
-                rua: dadosUnidade.rua,
-                numero: dadosUnidade.numero,
-                complemento: dadosUnidade.complemento,
-                bairro: dadosUnidade.bairro,
-                cidade: dadosUnidade.cidade,
-                estado: dadosUnidade.uf
-            }
-            api.post('/api/v1/unidade', body, {
-                headers: {
-                    Accept: 'application/json',
-                    Authorization: `Bearer ${token}`
-                }
-            }).then((res) => {
-                console.log(res.data)
-            }).catch((err) => {
-                console.log(err)
-            })
+            salvarUnidade(res.data.id)
+            salvarUser(res.data.id)
         }).catch((err) => {
             console.log(err)
         })
@@ -365,7 +437,7 @@ export default function NovoNegocio() {
                             placeholder="whatsapp"
                             name="wpp"
                             value={dadosUsuario.wpp}
-                            onChange={pegarDadosUsuario}
+                            onChange={pegarTelefone}
                         />
 
                         <input 
@@ -393,7 +465,8 @@ export default function NovoNegocio() {
                             
                             <span>Definir como proprietário</span>
                         </div>
-                        <button onClick={salvarDados}>Salvar</button>
+                        <p>{erro}</p>
+                        <button onClick={validarDadosUser}>Salvar</button>
                     </div>
                 </div>
             }
