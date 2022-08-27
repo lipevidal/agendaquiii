@@ -1,8 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import api from "../service/api";
 import { useNavigate } from 'react-router-dom'
+import NovoNegocio from "../Components/NovoNegocio";
 
 export default function Adm() {
+    const [esperar, setEsperar] = useState(true)
     const navigate = useNavigate()
     const token = localStorage.getItem('token')
 
@@ -24,10 +26,21 @@ export default function Adm() {
             }
         }).catch((err) => {
             console.log(err)
+        }).finally(() => {
+            setEsperar(false)
         })
     }
 
     return (
-        <div>Página do administrador</div>
+        <div className="adm">
+            {!esperar &&
+            <div>
+                <h1>Painel do Administrador</h1>
+                <div>
+                    <NovoNegocio />
+                </div>
+            </div>
+            }
+        </div>
     )
 }
