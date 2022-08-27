@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../service/api";
 import { useNavigate } from 'react-router-dom'
-import NovoNegocio from "../Components/NovoNegocio";
 import ListaNegocios from "../Components/ListaNegocios";
 
 export default function Adm() {
@@ -38,7 +37,6 @@ export default function Adm() {
             <div>
                 <h1>Painel Administrativo</h1>
                 <div>
-                    <NovoNegocio />
                     <ListaNegocios />
                 </div>
             </div>
