@@ -17,6 +17,7 @@ class User extends Authenticatable implements JWTSubject {
      * @var array
      */
     protected $fillable = [
+        'negocio_id',
         'nome',
         'email',
         'telefone',
@@ -87,5 +88,9 @@ class User extends Authenticatable implements JWTSubject {
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function negocio() {
+        return $this->belongsTo('App\Models\Negocio');
     }
 }

@@ -22,7 +22,12 @@ Route::prefix('v1')->middleware('jwt.auth')->group(function() {
     Route::delete('use/{id}', 'App\Http\Controllers\UserController@destroy');
     Route::post('logout', 'App\Http\Controllers\AuthController@logout');
     Route::post('me', 'App\Http\Controllers\AuthController@me');
+    Route::apiResource('negocio', 'App\Http\Controllers\NegocioController');
+    Route::apiResource('unidade', 'App\Http\Controllers\UnidadeController');
 });
 
 Route::post('login', 'App\Http\Controllers\AuthController@login');
 Route::post('refresh', 'App\Http\Controllers\AuthController@refresh');
+
+//somente em desenvolvimento
+Route::post('user', 'App\Http\Controllers\UserController@store');

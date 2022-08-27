@@ -18,7 +18,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = $this->user::all();
+        $users = $this->user->with('negocio')->get();
         return $users;
     }
 
@@ -33,6 +33,7 @@ class UserController extends Controller
         $request->validate($this->user->rules(), $this->user->feedback());
         if($request->proprietario) {
             $user = $this->user->create([
+                'negocio_id' => $request->negocio_id,
                 'nome' => $request->nome,
                 'email' => $request->email,
                 'telefone' => $request->telefone,
@@ -42,6 +43,7 @@ class UserController extends Controller
             ]);
         } else {
             $user = $this->user->create([
+                'negocio_id' => $request->negocio_id,
                 'nome' => $request->nome,
                 'email' => $request->email,
                 'telefone' => $request->telefone,
