@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import api from "../service/api";
+import { useDispatch } from 'react-redux'
+import { addNegocio } from '../store/Negocios/negocios.actions'
+import { addUnidade } from '../store/Unidades/unidades.actions'
+import { addUsuario } from '../store/Usuarios/usuarios.actions'
 
-export default function NovoNegocio() {
+export default function NovoNegocio(props) {
+    const dispatch = useDispatch()
     const token = localStorage.getItem('token')
     const [negocioId, setNegocioId] = useState('')
     const [erro, setErro] = useState('')
@@ -239,6 +244,7 @@ export default function NovoNegocio() {
             }
         }).then((res) => {
             console.log(res)
+            dispatch(addUnidade(res.data))
         }).catch((err) => {
             console.log(err)
         })
@@ -260,8 +266,11 @@ export default function NovoNegocio() {
             }
         }).then((res) => {
             console.log(res)
+            dispatch(addUsuario(res.data))
         }).catch((err) => {
             console.log(err)
+        }).finally(() => {
+            props.voltar()
         })
     }
 
@@ -283,6 +292,7 @@ export default function NovoNegocio() {
             }
         }).then((res) => {
             console.log(res)
+            dispatch(addNegocio(res.data))
             salvarUnidade(res.data.id)
             salvarUser(res.data.id)
         }).catch((err) => {
@@ -292,6 +302,7 @@ export default function NovoNegocio() {
 
     return (
         <div className="novo-usuario">
+            <button onClick={props.voltar}>Voltar</button>
             <h2>Novo Negócio</h2>
 
             {paginas.criarNegocio && 
@@ -401,8 +412,12 @@ export default function NovoNegocio() {
                             onChange={pegarDadosUnidadde}
                         />
                         <p>{erro}</p>
-                        <button onClick={validarDadosUnidade}>Adicionar Usuário</button>
-
+                        <button 
+                            onClick={() => 
+                            setPaginas({criarNegocio: true, criarUnidade: false, criarUsuario: false})}>
+                                Anterior
+                        </button>
+                        <button onClick={validarDadosUnidade}>Próximo</button>
                     </div>
                 </div>
             }
@@ -466,6 +481,11 @@ export default function NovoNegocio() {
                             <span>Definir como proprietário</span>
                         </div>
                         <p>{erro}</p>
+                        <button 
+                            onClick={() => 
+                            setPaginas({criarNegocio: false, criarUnidade: true, criarUsuario: false})}>
+                                Anterior
+                        </button>
                         <button onClick={validarDadosUser}>Salvar</button>
                     </div>
                 </div>
