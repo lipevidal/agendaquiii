@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useSelector } from 'react-redux'
-import api from "../service/api";
+import api from "../../service/api";
 import { useDispatch } from 'react-redux'
-import { addUnidade } from '../store/Unidades/unidades.actions'
+import { addUnidade } from '../../store/Unidades/unidades.actions'
 
 export default function EditarNegocio(props) {
     const idNegocio = props.idDoNegocio
@@ -67,6 +67,7 @@ export default function EditarNegocio(props) {
     const validarDadosUnidade = () => {
         const body = {
             nome: dadosUnidade.nomeUnidade,
+            nome_negocio: negocioAtual[0].nome,
             link_whatsapp: dadosUnidade.linkWpp,
             cep: dadosUnidade.cep,
             rua: dadosUnidade.rua,
@@ -75,6 +76,7 @@ export default function EditarNegocio(props) {
             bairro: dadosUnidade.bairro,
             cidade: dadosUnidade.cidade,
             estado: dadosUnidade.uf,
+            valor_proximo_pagamento: dadosUnidade.valor_proximo_pagamento,
             validar: 1
         }
         api.post('/api/v1/unidade', body, {
@@ -98,6 +100,8 @@ export default function EditarNegocio(props) {
                 setErro(e.rua[0])
             } else if(e.numero) {
                 setErro(e.numero[0])
+            } else if(e.valor_proximo_pagamento) {
+                setErro(e.valor_proximo_pagamento[0])
             }
         })
     }
@@ -106,6 +110,7 @@ export default function EditarNegocio(props) {
         const body = {
             negocio_id: idNegocio,
             nome: dadosUnidade.nomeUnidade.toLowerCase(),
+            nome_negocio: negocioAtual[0].nome.toLowerCase(),
             link_whatsapp: dadosUnidade.linkWpp,
             cep: dadosUnidade.cep,
             rua: dadosUnidade.rua.toLowerCase(),
@@ -113,7 +118,8 @@ export default function EditarNegocio(props) {
             complemento: dadosUnidade.complemento.toLowerCase(),
             bairro: dadosUnidade.bairro.toLowerCase(),
             cidade: dadosUnidade.cidade.toLowerCase(),
-            estado: dadosUnidade.uf.toLowerCase()
+            estado: dadosUnidade.uf.toLowerCase(),
+            valor_proximo_pagamento: dadosUnidade.valor_proximo_pagamento.replace(/[^\d\,]/g, "").replace(",", ".")
         }
         api.post('/api/v1/unidade', body, {
             headers: {
@@ -267,6 +273,12 @@ export default function EditarNegocio(props) {
                                 name="uf" 
                                 placeholder="Estado"
                                 value={dadosUnidade.uf}
+                                onChange={pegarDadosUnidadde}
+                            />
+                            <input 
+                                name="valor_proximo_pagamento" 
+                                placeholder="Digite o valor do próximo pagamento"
+                                value={dadosUnidade.valor_proximo_pagamento}
                                 onChange={pegarDadosUnidadde}
                             />
                             <p>{erro}</p>
