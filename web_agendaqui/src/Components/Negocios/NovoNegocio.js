@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import api from "../service/api";
+import api from "../../service/api";
 import { useDispatch } from 'react-redux'
-import { addNegocio } from '../store/Negocios/negocios.actions'
-import { addUnidade } from '../store/Unidades/unidades.actions'
-import { addUsuario } from '../store/Usuarios/usuarios.actions'
+import { addNegocio } from '../../store/Negocios/negocios.actions'
+import { addUnidade } from '../../store/Unidades/unidades.actions'
+import { addUsuario } from '../../store/Usuarios/usuarios.actions'
 
 export default function NovoNegocio(props) {
     const dispatch = useDispatch()
@@ -32,7 +32,8 @@ export default function NovoNegocio(props) {
         complemento: '',
         bairro: '',
         cidade: '',
-        uf: ''
+        uf: '',
+        valor_proximo_pagamento: ''
     })
 
     const [dadosUsuario, setDadosUsuario] = useState({
@@ -63,7 +64,6 @@ export default function NovoNegocio(props) {
     const pegarDadosUsuario = (e) => {
         setErro('')
         setDadosUsuario({...dadosUsuario, [e.target.name]: e.target.value})
-        console.log(dadosUsuario.proprietario)
     }
 
     const pegarCheckbox = (e) => {
@@ -155,6 +155,7 @@ export default function NovoNegocio(props) {
     const validarDadosUnidade = () => {
         const body = {
             nome: dadosUnidade.nomeUnidade,
+            nome_negocio: dadosNegocio.nomeNegocio,
             link_whatsapp: dadosUnidade.linkWpp,
             cep: dadosUnidade.cep,
             rua: dadosUnidade.rua,
@@ -163,8 +164,11 @@ export default function NovoNegocio(props) {
             bairro: dadosUnidade.bairro,
             cidade: dadosUnidade.cidade,
             estado: dadosUnidade.uf,
+            valor_proximo_pagamento: dadosUnidade.valor_proximo_pagamento.replace(/[^\d\,]/g, "").replace(",", "."),
             validar: 1
         }
+        //.replace(/[^\d\,]/g, "").replace(",", ".")
+        console.log(body.valor_proximo_pagamento)
         api.post('/api/v1/unidade', body, {
             headers: {
                 Accept: 'application/json',
@@ -186,6 +190,8 @@ export default function NovoNegocio(props) {
                 setErro(e.rua[0])
             } else if(e.numero) {
                 setErro(e.numero[0])
+            } else if(e.valor_proximo_pagamento) {
+                setErro(e.valor_proximo_pagamento[0])
             }
         })
     }
@@ -228,6 +234,7 @@ export default function NovoNegocio(props) {
         const body = {
             negocio_id: id,
             nome: dadosUnidade.nomeUnidade.toLowerCase(),
+            nome_negocio: dadosNegocio.nomeNegocio.toLowerCase(),
             link_whatsapp: dadosUnidade.linkWpp,
             cep: dadosUnidade.cep,
             rua: dadosUnidade.rua.toLowerCase(),
@@ -235,8 +242,10 @@ export default function NovoNegocio(props) {
             complemento: dadosUnidade.complemento.toLowerCase(),
             bairro: dadosUnidade.bairro.toLowerCase(),
             cidade: dadosUnidade.cidade.toLowerCase(),
-            estado: dadosUnidade.uf.toLowerCase()
+            estado: dadosUnidade.uf.toLowerCase(),
+            valor_proximo_pagamento: dadosUnidade.valor_proximo_pagamento.replace(/[^\d\,]/g, "").replace(",", ".")
         }
+        //.replace(/[^\d\,]/g, "").replace(",", ".")
         api.post('/api/v1/unidade', body, {
             headers: {
                 Accept: 'application/json',
@@ -409,6 +418,12 @@ export default function NovoNegocio(props) {
                             name="uf" 
                             placeholder="Estado"
                             value={dadosUnidade.uf}
+                            onChange={pegarDadosUnidadde}
+                        />
+                        <input 
+                            name="valor_proximo_pagamento" 
+                            placeholder="Digite o valor do próximo pagamento"
+                            value={dadosUnidade.valor_proximo_pagamento}
                             onChange={pegarDadosUnidadde}
                         />
                         <p>{erro}</p>

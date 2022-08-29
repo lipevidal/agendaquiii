@@ -11,6 +11,7 @@ export default function ListaNegocios() {
         novoNegocio: false,
         editarNegocio: false
     })
+
     const negocios = useSelector((state) => {
         return state.negocios
     })
@@ -33,6 +34,7 @@ export default function ListaNegocios() {
     const listNegocios = negociosFiltrados.map((negocio) => {
         return (
             <tr className="item-negocio">
+                <td>{negocio.id}</td>
                 <td>{negocio.nome}</td>
                 <td>{negocio.pagina}</td>
                 <td>{negocio.tipo}</td>
@@ -53,12 +55,15 @@ export default function ListaNegocios() {
 
                     <input 
                         type="text"
+                        placeholder="Buscar negocios"
                         value={busca}
                         onChange={(e) => setBusca(e.target.value)}
                     />
 
+                    {negocios.length > 0 &&
                     <table>
                         <tr>
+                            <th>Id</th>
                             <th>Nome do negócio</th>
                             <th>Nome único</th>
                             <th>Tipo</th>
@@ -66,6 +71,7 @@ export default function ListaNegocios() {
                         </tr>
                         {listNegocios}
                     </table>
+                    }
                 </div>
             }
             {paginas.novoNegocio &&
